@@ -5,6 +5,8 @@ var spnBoy;
 var objMusuh;
 var layerBlank;
 var BtnPlay;
+var alert;
+var BGM;
 var gameOver = false;
 var state = "Opening";
 var jump = false;
@@ -25,6 +27,8 @@ class Example extends Phaser.Scene
 
     preload ()
     {
+        this.load.audio("BGM", "assets/sfx/BGM.mp3");
+
         this.load.image("BG", "assets/gfx/Angkasa.jpg");
         this.load.image("Ufo", "assets/gfx/Ufo.png");
         this.load.image("ButtonPlay", "assets/gfx/ButtonPlay.png");
@@ -38,6 +42,9 @@ class Example extends Phaser.Scene
     {
         winSizeX = game.config.width;
         winSizeY = game.config.height;
+
+        BGM = this.sound.add("BGM", { loop: true });
+        // BGM.play();
         
         // Membuat objek Graphics
         const graphics = this.add.graphics();
@@ -166,6 +173,7 @@ class Example extends Phaser.Scene
         text1.setStroke('#ff0000', 16)
         text1.y = -400;
         text1.setPadding(16);
+        alert = text1;
 
         // Simple Sentence with punctuation.
         const str1 = 'اٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ';
@@ -249,6 +257,9 @@ class Example extends Phaser.Scene
         ButtonPlay.on('pointerup', () =>
         {
             if (state == "Opening") {
+                if (BGM && !BGM.isPlaying) {
+                    BGM.play();
+                }
                 state = "Play";
                 ButtonPlay.disableInteractive();
                 ButtonPlay.clearTint();  // Menghapus tint dan kembali ke warna asli
@@ -293,7 +304,7 @@ class Example extends Phaser.Scene
                                         ease: "sine.inout",
                                     },
                                     {
-                                        scale: 1.,
+                                        scale: 1,
                                         duration: 800,
                                         ease: "sine.inout",
                                     }
@@ -433,6 +444,17 @@ class Example extends Phaser.Scene
                                     }
                                 ],
                                 onComplete: () => {
+                                    state = "Opening"
+                                    if (BGM && BGM.isPlaying) {
+                                        BGM.stop();
+                                    }
+                                    gameOver = false;
+                                    jump = false;
+                                    if (alert) {
+                                        alert.setScale(1)
+                                        this.tweens.killTweensOf(alert);
+                                    }
+                                    objMusuh.destroy();
                                     // spnBoy.state.setAnimation(0, "run", true);
                                     // createMusuh();
                                     BtnPlay.setInteractive();
