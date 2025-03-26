@@ -212,7 +212,7 @@ class Example extends Phaser.Scene
         let akhir = this.make.text({
             x: mukadimah.x - mukadimah.getBounds().width / 2,
             y: isi.y + isi.getBounds().height + 20,
-            text: 'Diharapkan membawa uang masing-masing sebanyak mungkin untuk membayar makanan ya guys ya. Sekian, love you all ❤️❤️❤️',
+            text: 'Diharapkan membawa uang masing-masing sebanyak mungkin untuk bayar makanannya ya guys ya. Sekian, love you all ❤️❤️❤️',
             origin: { x: 0, y: 0 },
             style: {
                 font: 'bold 18px Arial',
