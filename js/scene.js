@@ -9,6 +9,7 @@ var alert;
 var BGM;
 var gameOver = false;
 var state = "Opening";
+var klik = false;
 var jump = false;
 
 class Example extends Phaser.Scene
@@ -408,7 +409,8 @@ class Example extends Phaser.Scene
             if (gameOver || state == "Opening") {
                 return;
             }
-            if (spnBoy && jump == false) {
+            if (spnBoy && jump == false && klik == false) {
+                klik = true;
                 spnBoy.state.setAnimation(0, "jump", false);
                 // spnBoy.state.addAnimation(0, "run", true);
                 if (objMusuh) {
@@ -431,6 +433,7 @@ class Example extends Phaser.Scene
                         repeat: 0,
                         ease: "sine.inout",
                         onComplete: () => {
+                            klik = false;
                             jump = false;
                             spnBoy.state.setAnimation(0, "run", true);
                         }
