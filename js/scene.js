@@ -32,7 +32,7 @@ class Example extends Phaser.Scene
         this.load.image("BG", "assets/gfx/Angkasa.jpg");
         this.load.image("Ufo", "assets/gfx/Ufo.png");
         this.load.image("ButtonPlay", "assets/gfx/ButtonPlay.png");
-        this.load.image("Maps", "assets/gfx/Maps.png");
+        // this.load.image("Maps", "assets/gfx/Maps.png");
 
         this.load.setPath('assets/spine/');
         this.load.spine("spineBoy", "spineboy/spineboy.json", "spineboy/spineboy.atlas");
@@ -111,8 +111,8 @@ class Example extends Phaser.Scene
                 thiz.tweens.add({
                     targets: sprUfo,
                     x: -sprUfo.getBounds().width / 2,
-                    duration: Phaser.Math.Between(1800, 2800),
-                    delay: Phaser.Math.Between(1000, 4000),
+                    duration: Phaser.Math.Between(1500, 2500),
+                    delay: Phaser.Math.Between(1000, 2000),
                     onComplete: () => {
                         sprUfo.destroy();
                         createMusuh();
@@ -131,8 +131,8 @@ class Example extends Phaser.Scene
                 thiz.tweens.add({
                     targets: spnAlien,
                     x: -szAlien.x / 2,
-                    duration: Phaser.Math.Between(1800, 2800),
-                    delay: Phaser.Math.Between(1000, 4000),
+                    duration: Phaser.Math.Between(1500, 2500),
+                    delay: Phaser.Math.Between(1000, 1800),
                     onComplete: () => {
                         spnAlien.destroy();
                         createMusuh();
@@ -201,7 +201,7 @@ class Example extends Phaser.Scene
         let isi = this.make.text({
             x: mukadimah.x - mukadimah.getBounds().width / 2,
             y: mukadimah.y + mukadimah.getBounds().height + 20,
-            text: '📅 Hari/Tanggal : Sabtu, 29 Maret 2025\n\n⏰ Waktu : 17.00 WIB-Selesai\n\n🏠 Tempat : Angkringan Boedjang.bu Sikasur',
+            text: '📅 Hari/Tanggal : Sabtu, 29 Maret 2025\n\n⏰ Waktu : 16.00 WIB-Selesai\n\n🏠 Tempat : Menyusul',
             origin: { x: 0, y: 0 },
             style: {
                 font: 'bold 18px Arial',
@@ -236,28 +236,28 @@ class Example extends Phaser.Scene
         akhir.setScale(0.5);
         salam2.setScale(0.5);
 
-        let Maps = this.add.image(winSizeX - 200, isi.y + 45, "Maps")
-        this.tweens.chain({
-            targets: Maps,
-            tweens: [
-                {
-                    scaleX: 0.9,
-                    scaleY: 1.1,
-                    y: Maps.y - 20,
-                    yoyo: true,
-                    duration: 1000,
-                    ease: "back.in"
-                },
-                {
-                    scale: 1,
-                    duration: 1000,
-                    ease: "elastic.out"
-                }
-            ],
-            repeat: -1
-        });
-        Maps.setAlpha(0);
-        Maps.setInteractive();
+        // let Maps = this.add.image(winSizeX - 200, isi.y + 45, "Maps")
+        // this.tweens.chain({
+        //     targets: Maps,
+        //     tweens: [
+        //         {
+        //             scaleX: 0.9,
+        //             scaleY: 1.1,
+        //             y: Maps.y - 20,
+        //             yoyo: true,
+        //             duration: 1000,
+        //             ease: "back.in"
+        //         },
+        //         {
+        //             scale: 1,
+        //             duration: 1000,
+        //             ease: "elastic.out"
+        //         }
+        //     ],
+        //     repeat: -1
+        // });
+        // Maps.setAlpha(0);
+        // Maps.setInteractive();
 
         // untuk play awal
         ButtonPlay.setInteractive();
@@ -367,13 +367,13 @@ class Example extends Phaser.Scene
                         delay: 900 + 400 + 400,
                         ease: "back.out",
                     });
-                    this.tweens.add({
-                        targets: Maps,
-                        alpha: 1,
-                        duration: 200,
-                        delay: 900 + 400 + 400,
-                        ease: "back.out",
-                    });
+                    // this.tweens.add({
+                    //     targets: Maps,
+                    //     alpha: 1,
+                    //     duration: 200,
+                    //     delay: 900 + 400 + 400,
+                    //     ease: "back.out",
+                    // });
 
                     this.tweens.add({
                         targets: akhir,
@@ -396,11 +396,11 @@ class Example extends Phaser.Scene
             }
         });
 
-        Maps.on('pointerup', () =>
-        {
-            // Membuka link ketika objek diklik
-            window.open('https://www.google.com/maps/place/Angkringan+Boedjang.bu+Sikasur/@-7.1093171,109.3186862,17z/data=!3m1!4b1!4m6!3m5!1s0x2e6fef0064ff0da1:0x18a2ed96e393f3a3!8m2!3d-7.1093171!4d109.3212611!16s%2Fg%2F11vk4txrxy?entry=ttu&g_ep=EgoyMDI1MDMyNC4wIKXMDSoJLDEwMjExNDU1SAFQAw%3D%3D', '_blank'); // Membuka link di tab baru
-        });
+        // Maps.on('pointerup', () =>
+        // {
+        //     // Membuka link ketika objek diklik
+        //     window.open('https://www.google.com/maps/place/Angkringan+Boedjang.bu+Sikasur/@-7.1093171,109.3186862,17z/data=!3m1!4b1!4m6!3m5!1s0x2e6fef0064ff0da1:0x18a2ed96e393f3a3!8m2!3d-7.1093171!4d109.3212611!16s%2Fg%2F11vk4txrxy?entry=ttu&g_ep=EgoyMDI1MDMyNC4wIKXMDSoJLDEwMjExNDU1SAFQAw%3D%3D', '_blank'); // Membuka link di tab baru
+        // });
 
         // untuk klik
         this.input.on('pointerdown', () =>
