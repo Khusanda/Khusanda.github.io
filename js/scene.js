@@ -1,12 +1,17 @@
 var winSizeX;
 var winSizeY;
-var canPlay = true;
+var canPlay = false;
 
 let arrPreloadMakanan = [];
 let arrPreloadPelanggan = [];
 var bubbleTeks;
 var Teks;
 var arrMakanan = [];
+var arrDataPelanggan = [];
+
+var canMakananDrag = false;
+var makananDrag;
+
 
 function rgbToHexColor(r, g, b) {
     // Pastikan nilai berada dalam rentang 0-255
@@ -138,7 +143,9 @@ class ScenePlay extends Phaser.Scene
                 mkn.alpha = 0;
                 mkn.scale = 0.1;
             }
+            mkn.tag = i + 1;
             // mkn.setInteractive({ draggable: true });
+            mkn.setInteractive();
             arrMakanan.push(mkn);
         }
 
@@ -173,29 +180,110 @@ class ScenePlay extends Phaser.Scene
             let pelanggan = this.add.image(winSizeX / 2, winSizeY / 2, "Pelanggan" + randId);
             pelanggan.setScale(0.7);
             pelanggan.setPosition(winSizeX - pelanggan.getBounds().width / 2, winSizeY - pelanggan.getBounds().height / 2);
-            pelanggan.alpha = 0;
-            this.tweens.add({
-                targets: pelanggan,
-                alpha: 1,
-                duration: 200,
-                ease: "Sine.easeSineOut"
+            pelanggan.setInteractive();
+            pelanggan.input.dropZone = true;
+            arrDataPelanggan.push({spr: pelanggan, bubble: null, dataSprMakanan: [], dataMakanan: []});
+            let szPelanggan = pelanggan.getBounds();
+            // let bubblePelanggan = this.returnBuble(pelanggan.x, pelanggan.y - szPelanggan.height, 300, 100);
+            // bubblePelanggan.setScale(-1, 1);
+            this.createMakananPelangggan(pelanggan.x, pelanggan.y - szPelanggan.height);
+
+            if (canPlay) {
+                pelanggan.alpha = 0;
+                this.tweens.add({
+                    targets: pelanggan,
+                    alpha: 1,
+                    duration: 200,
+                    ease: "Sine.easeSineOut"
+                });
+            }
+        };
+        if (!canPlay) {
+            createPelanggan(Phaser.Math.Between(1, arrPreloadPelanggan.length));
+        }
+        const hidePelanggan = (idPelanggan, idMakanan) => {
+            arrDataPelanggan[idPelanggan].spr.alpha = 0;
+            arrDataPelanggan[idPelanggan].bubble.alpha = 0;
+            arrDataPelanggan[idPelanggan].dataSprMakanan[idMakanan].alpha = 0;
+            this.time.delayedCall(1000, () => {
+                arrDataPelanggan = []
+                createPelanggan(Phaser.Math.Between(1, arrPreloadPelanggan.length));
             });
         };
 
+        // Inputan
+        for (let i = 0; i < arrMakanan.length; i++) {
+            arrMakanan[i].on('pointerdown', function (pointer, dragX, dragY) {
+                console.log("ScenePlay | pointerdown | arrMakanan[i].tag: " + arrMakanan[i].tag);
+                canMakananDrag = true;
+                makananDrag = this.add.image(pointer.x, pointer.y, "Makanan" + arrMakanan[i].tag);
+                makananDrag.setScale(0.35);
+                makananDrag.tag = arrMakanan[i].tag;
+                // makananDrag.setInteractive({ draggable: true });
+                makananDrag.setInteractive();
+            }, this);
+        }
         // Belum dipakai
+        // Drag
         // this.input.on('dragstart', function (pointer, gameObject) {
-
         //     //  This will bring the selected gameObject to the top of the list
         //     this.children.bringToTop(gameObject);
-
         // }, this);
 
         // this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
-
         //     gameObject.x = dragX;
         //     gameObject.y = dragY;
-
         // });
+        this.input.on('pointermove', function (pointer)
+        {
+            if (makananDrag != null && canMakananDrag) {
+                // console.log("hehe");
+                makananDrag.x = pointer.x;
+                makananDrag.y = pointer.y;
+            }
+        }, this);
+        this.input.on('pointerup', function (pointer, dragX, dragY) {
+            console.log("this.input | pointerup");
+            if (canMakananDrag && makananDrag != null) {
+                canMakananDrag = false;
+                for (let i = 0; i < arrDataPelanggan.length; i++) {
+                    if (Phaser.Geom.Intersects.RectangleToRectangle(makananDrag.getBounds(), arrDataPelanggan[i].spr)) {
+                        console.log('Tumpang tindih!');
+                        for (let j = 0; j < arrDataPelanggan[i].dataMakanan.length; j++) {
+                            if (makananDrag.tag == arrDataPelanggan[i].dataMakanan[j]) {
+                                console.log("anjay kamu benar");
+                                makananDrag.setScale(0).destroy();
+                                hidePelanggan(i, j);
+                            } else {
+                                console.log("anjay kamu bohong");
+                                makananDrag.setScale(0).destroy();
+                            }
+                        }
+                    } else {
+                        console.log('Tidak bertumpuk.');
+                        makananDrag.setScale(0).destroy();
+                    }
+                }
+            }
+        }, this);
+        // this.input.on('drop', (pointer, gameObject, dropZone) =>
+        // {
+        //     console.log("droppp");
+        //     gameObject.x = dropZone.x;
+        //     gameObject.y = dropZone.y;
+        //     gameObject.setScale(0.2);
+        //     gameObject.input.enabled = false;
+        // });
+
+        // this.input.on('dragend', (pointer, gameObject, dropped) =>
+        // {
+        //     if (!dropped)
+        //     {
+        //         gameObject.x = gameObject.input.dragStartX;
+        //         gameObject.y = gameObject.input.dragStartY;
+        //     }
+        // });
+        // Drag
 
         if (canPlay) {
             // Karakter
@@ -410,6 +498,42 @@ class ScenePlay extends Phaser.Scene
             });
         }
     }
+
+    createMakananPelangggan(x, y)
+    {
+        let jmlMakanan = 1;
+        // let jmlMakanan = Phaser.Math.Between(1, 3);
+        let arrIdMakanan = [];
+        let arrSprMakanan = [];
+        for (let i = 0; i < jmlMakanan; i++) {
+            let randomId = Phaser.Math.Between(1, 10);
+
+            if (!arrIdMakanan.includes(randomId)) {
+                arrIdMakanan.push(randomId);
+            }
+        }
+        console.log('List ID:', arrIdMakanan);
+        
+        const widthBubble = 200;
+        const heightBubble = 100;
+        if (jmlMakanan == 2) {
+            widthBubble = 250;
+        } else if (jmlMakanan == 3) {
+            widthBubble = 300;
+        }
+        let bubblePelanggan = this.returnBuble(x, y, widthBubble, heightBubble);
+        bubblePelanggan.setScale(-1, 1);
+        arrDataPelanggan[arrDataPelanggan.length - 1].bubble = bubblePelanggan;
+        for (let i = 0; i < arrIdMakanan.length; i++) {
+            let mknBubble = this.add.image(bubblePelanggan.x - widthBubble / 2, bubblePelanggan.y + heightBubble / 2, "Makanan" + arrIdMakanan[0]);
+            mknBubble.setScale(0.2);
+            arrSprMakanan.push(mknBubble);
+        }
+        
+        arrDataPelanggan[arrDataPelanggan.length - 1].dataSprMakanan = arrSprMakanan;
+        arrDataPelanggan[arrDataPelanggan.length - 1].dataMakanan = arrIdMakanan;
+        console.log(arrDataPelanggan);
+    }
 }
 
 const config = {
@@ -424,8 +548,8 @@ const config = {
         height: 1280, // Tinggi dasar yang cukup untuk potret
     },
     backgroundColor: '#ffffff',
-    scene: [SceneMenu, ScenePlay],
-    // scene: [ScenePlay],
+    // scene: [SceneMenu, ScenePlay],
+    scene: [ScenePlay],
     physics: {
         default: 'arcade',
         arcade: {
