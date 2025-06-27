@@ -1,6 +1,6 @@
 var winSizeX;
 var winSizeY;
-var canPlay = false;
+var canPlay = true;
 
 let arrPreloadMakanan = [];
 let arrPreloadPelanggan = [];
@@ -548,8 +548,8 @@ const config = {
         height: 1280, // Tinggi dasar yang cukup untuk potret
     },
     backgroundColor: '#ffffff',
-    // scene: [SceneMenu, ScenePlay],
-    scene: [ScenePlay],
+    scene: [SceneMenu, ScenePlay],
+    // scene: [ScenePlay],
     physics: {
         default: 'arcade',
         arcade: {
