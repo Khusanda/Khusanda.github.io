@@ -1,6 +1,6 @@
 var winSizeX;
 var winSizeY;
-var canPlay = false;
+var canPlay = true;
 
 let arrPreloadMakanan = [];
 let arrPreloadPelanggan = [];
