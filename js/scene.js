@@ -298,13 +298,23 @@ class ScenePlay extends Phaser.Scene
             createPelanggan(Phaser.Math.Between(1, arrPreloadPelanggan.length));
         }
         const hidePelanggan = (idPelanggan, idMakanan) => {
-            arrDataPelanggan[idPelanggan].spr.alpha = 0;
-            arrDataPelanggan[idPelanggan].bubble.alpha = 0;
+            // arrDataPelanggan[idPelanggan].spr.alpha = 0;
+            // arrDataPelanggan[idPelanggan].bubble.alpha = 0;
             // arrDataPelanggan[idPelanggan].dataSprMakanan[idMakanan].alpha = 0;
             for (let i = 0; i < arrDataPelanggan[idPelanggan].dataMakanan.length; i++) {
                 arrDataPelanggan[idPelanggan].dataMakanan[i].spr.alpha = 0;
+                arrDataPelanggan[idPelanggan].dataMakanan[i].spr.destroy();
             }
-            this.time.delayedCall(1000, () => {
+            let bubble = arrDataPelanggan[idPelanggan].bubble;
+            let txtTy = this.add.text(bubble.x - bubble.getData("width") / 2, bubble.y + bubble.getData("height") / 2, "Terimakasih.", { fontFamily: 'Arial Black', fontSize: 24, color: '#000000', align: 'center' });
+            txtTy.setOrigin(0.5, 0.5);
+            this.time.delayedCall(1100, () => {
+                txtTy.alpha = 0;
+                arrDataPelanggan[idPelanggan].spr.alpha = 0;
+                arrDataPelanggan[idPelanggan].bubble.alpha = 0;
+                txtTy.destroy();
+                arrDataPelanggan[idPelanggan].spr.destroy();
+                arrDataPelanggan[idPelanggan].bubble.destroy();
                 arrDataPelanggan = []
                 createPelanggan(Phaser.Math.Between(1, arrPreloadPelanggan.length));
             });
@@ -653,6 +663,8 @@ class ScenePlay extends Phaser.Scene
             reposX = 80;
         }
         let bubblePelanggan = this.returnBuble(x, y, widthBubble, heightBubble);
+        bubblePelanggan.setData('width', widthBubble);
+        bubblePelanggan.setData('height', heightBubble);
         bubblePelanggan.setScale(-1, 1);
         arrDataPelanggan[arrDataPelanggan.length - 1].bubble = bubblePelanggan;
         for (let i = 0; i < arrIdMakanan.length; i++) {
