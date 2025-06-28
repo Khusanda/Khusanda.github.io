@@ -65,7 +65,7 @@ class PreloadScene extends Phaser.Scene {
             text: '0%',
             style: {
                 font: '18px monospace',
-                fill: '#ffffff'
+                fill: '#ffcc00'
             }
         }).setOrigin(0.5);
 
