@@ -1,6 +1,6 @@
 var winSizeX;
 var winSizeY;
-var canPlay = true;
+var canPlay = false;
 
 let arrPreloadMakanan = [];
 let arrPreloadPelanggan = [];
@@ -23,6 +23,101 @@ function rgbToHexColor(r, g, b) {
     return (r << 16) + (g << 8) + b;
 }
 
+class PreloadScene extends Phaser.Scene {
+    constructor() {
+        super({
+            key: 'PreloadScene',
+            pack: {
+                files: [
+                    { type: 'scenePlugin', key: 'SpinePlugin',  sceneKey: 'spine' }
+                ]
+            }
+        });
+    }
+
+    preload() {
+        // Background dari progress bar
+        let progressBox = this.add.graphics();
+        let progressBar = this.add.graphics();
+
+        let width = this.cameras.main.width;
+        let height = this.cameras.main.height;
+
+        // Gambar kotak latar
+        progressBox.fillStyle(0x222222, 0.8);
+        progressBox.fillRect(width / 2 - 160, height / 2 - 25, 320, 50);
+
+        // Teks loading
+        let loadingText = this.make.text({
+            x: width / 2,
+            y: height / 2 - 50,
+            text: 'Loading...',
+            style: {
+                font: '20px monospace',
+                fill: '#ffffff'
+            }
+        }).setOrigin(0.5);
+
+        // Teks persen
+        let percentText = this.make.text({
+            x: width / 2,
+            y: height / 2,
+            text: '0%',
+            style: {
+                font: '18px monospace',
+                fill: '#ffffff'
+            }
+        }).setOrigin(0.5);
+
+        // Event saat progress berubah
+        this.load.on('progress', (value) => {
+            percentText.setText(parseInt(value * 100) + '%');
+            progressBar.clear();
+            progressBar.fillStyle(0xffffff, 1);
+            progressBar.fillRect(width / 2 - 150, height / 2 - 15, 300 * value, 30);
+        });
+
+        // Event saat file berhasil dimuat (opsional)
+        this.load.on('fileprogress', (file) => {
+            console.log('Loading asset: ' + file.key);
+        });
+
+        // Event saat semua selesai
+        this.load.on('complete', () => {
+            progressBar.destroy();
+            progressBox.destroy();
+            loadingText.destroy();
+            percentText.destroy();
+        });
+
+        // --- Load asset di sini ---
+        // SceneMenu
+        this.load.image("Background", "assets/gfx/Background.png");
+        this.load.image("Background1", "assets/gfx/Background1.png");
+        this.load.image("Title", "assets/gfx/Title.png");
+        this.load.image("ButtonPlay", "assets/gfx/ButtonPlay.png");
+        // ScenePlay
+        console.log("Scene | ScenePlay | preload");
+        this.load.image("Warung", "assets/gfx/Warung.png");
+        this.load.image("WarungB", "assets/gfx/WarungB.png");
+        this.load.image("Etalase", "assets/gfx/Etalase.png");
+        this.load.image("PakWarung", "assets/gfx/PakWarteg.png");
+        for (let i = 1; i < 13; i++) {
+            this.load.image("Makanan" + i, "assets/gfx/Makanan" + i + ".png");
+            arrPreloadMakanan.push("Makanan" + i);
+        }
+        for (let i = 1; i < 10; i++) {
+            this.load.image("Pelanggan" + i, "assets/gfx/Pelanggan" + i + ".png");
+            arrPreloadPelanggan.push("Pelanggan" + i);
+        }
+    }
+
+    create() {
+        // Masuk ke scene utama setelah preload
+        this.scene.start('SceneMenu');
+    }
+}
+
 class SceneMenu extends Phaser.Scene
 {
     constructor ()
@@ -39,10 +134,10 @@ class SceneMenu extends Phaser.Scene
 
     preload ()
     {
-        this.load.image("Background", "assets/gfx/Background.png");
-        this.load.image("Background1", "assets/gfx/Background1.png");
-        this.load.image("Title", "assets/gfx/Title.png");
-        this.load.image("ButtonPlay", "assets/gfx/ButtonPlay.png");
+        // this.load.image("Background", "assets/gfx/Background.png");
+        // this.load.image("Background1", "assets/gfx/Background1.png");
+        // this.load.image("Title", "assets/gfx/Title.png");
+        // this.load.image("ButtonPlay", "assets/gfx/ButtonPlay.png");
     }
 
     create ()
@@ -92,19 +187,19 @@ class ScenePlay extends Phaser.Scene
     }
 
     preload () {
-        console.log("Scene | ScenePlay | preload");
-        this.load.image("Warung", "assets/gfx/Warung.png");
-        this.load.image("WarungB", "assets/gfx/WarungB.png");
-        this.load.image("Etalase", "assets/gfx/Etalase.png");
-        this.load.image("PakWarung", "assets/gfx/PakWarteg.png");
-        for (let i = 1; i < 13; i++) {
-            this.load.image("Makanan" + i, "assets/gfx/Makanan" + i + ".png");
-            arrPreloadMakanan.push("Makanan" + i);
-        }
-        for (let i = 1; i < 10; i++) {
-            this.load.image("Pelanggan" + i, "assets/gfx/Pelanggan" + i + ".png");
-            arrPreloadPelanggan.push("Pelanggan" + i);
-        }
+        // console.log("Scene | ScenePlay | preload");
+        // this.load.image("Warung", "assets/gfx/Warung.png");
+        // this.load.image("WarungB", "assets/gfx/WarungB.png");
+        // this.load.image("Etalase", "assets/gfx/Etalase.png");
+        // this.load.image("PakWarung", "assets/gfx/PakWarteg.png");
+        // for (let i = 1; i < 13; i++) {
+        //     this.load.image("Makanan" + i, "assets/gfx/Makanan" + i + ".png");
+        //     arrPreloadMakanan.push("Makanan" + i);
+        // }
+        // for (let i = 1; i < 10; i++) {
+        //     this.load.image("Pelanggan" + i, "assets/gfx/Pelanggan" + i + ".png");
+        //     arrPreloadPelanggan.push("Pelanggan" + i);
+        // }
     }
     
     create () {
@@ -182,7 +277,8 @@ class ScenePlay extends Phaser.Scene
             pelanggan.setPosition(winSizeX - pelanggan.getBounds().width / 2, winSizeY - pelanggan.getBounds().height / 2);
             pelanggan.setInteractive();
             pelanggan.input.dropZone = true;
-            arrDataPelanggan.push({spr: pelanggan, bubble: null, dataSprMakanan: [], dataMakanan: []});
+            // arrDataPelanggan.push({spr: pelanggan, bubble: null, dataSprMakanan: [], dataMakanan: []});
+            arrDataPelanggan.push({spr: pelanggan, bubble: null, dataMakanan: [], countMakanan: 0});
             let szPelanggan = pelanggan.getBounds();
             // let bubblePelanggan = this.returnBuble(pelanggan.x, pelanggan.y - szPelanggan.height, 300, 100);
             // bubblePelanggan.setScale(-1, 1);
@@ -204,11 +300,18 @@ class ScenePlay extends Phaser.Scene
         const hidePelanggan = (idPelanggan, idMakanan) => {
             arrDataPelanggan[idPelanggan].spr.alpha = 0;
             arrDataPelanggan[idPelanggan].bubble.alpha = 0;
-            arrDataPelanggan[idPelanggan].dataSprMakanan[idMakanan].alpha = 0;
+            // arrDataPelanggan[idPelanggan].dataSprMakanan[idMakanan].alpha = 0;
+            for (let i = 0; i < arrDataPelanggan[idPelanggan].dataMakanan.length; i++) {
+                arrDataPelanggan[idPelanggan].dataMakanan[i].spr.alpha = 0;
+            }
             this.time.delayedCall(1000, () => {
                 arrDataPelanggan = []
                 createPelanggan(Phaser.Math.Between(1, arrPreloadPelanggan.length));
             });
+        };
+        const doneMakananBubble = (idPelanggan, idMakanan) => {
+            // arrDataPelanggan[idPelanggan].dataMakanan[idMakanan].spr.alpha = 0;
+            arrDataPelanggan[idPelanggan].dataMakanan[idMakanan].spr.setTint(rgbToHexColor(128, 128, 128));
         };
 
         // Inputan
@@ -245,24 +348,44 @@ class ScenePlay extends Phaser.Scene
         this.input.on('pointerup', function (pointer, dragX, dragY) {
             console.log("this.input | pointerup");
             if (canMakananDrag && makananDrag != null) {
+                let kenaPelanggan = false;
                 canMakananDrag = false;
                 for (let i = 0; i < arrDataPelanggan.length; i++) {
-                    if (Phaser.Geom.Intersects.RectangleToRectangle(makananDrag.getBounds(), arrDataPelanggan[i].spr)) {
+                    if (Phaser.Geom.Intersects.RectangleToRectangle(makananDrag.getBounds(), arrDataPelanggan[i].spr.getBounds())) {
                         console.log('Tumpang tindih!');
                         for (let j = 0; j < arrDataPelanggan[i].dataMakanan.length; j++) {
-                            if (makananDrag.tag == arrDataPelanggan[i].dataMakanan[j]) {
+                            if (makananDrag.tag == arrDataPelanggan[i].dataMakanan[j].id) {
+                                kenaPelanggan = true;
                                 console.log("anjay kamu benar");
                                 makananDrag.setScale(0).destroy();
-                                hidePelanggan(i, j);
-                            } else {
-                                console.log("anjay kamu bohong");
-                                makananDrag.setScale(0).destroy();
-                            }
+                                arrDataPelanggan[i].countMakanan++;
+                                arrDataPelanggan[i].dataMakanan[j].id = -1;
+                                doneMakananBubble(i, j);
+                                console.log("Kena pelanggan | arrDataPelanggan[i].countMakanan: " + arrDataPelanggan[i].countMakanan);
+                                console.log("Kena pelanggan | arrDataPelanggan[i].dataMakanan.length: " + arrDataPelanggan[i].dataMakanan.length);
+                                if (arrDataPelanggan[i].countMakanan == arrDataPelanggan[i].dataMakanan.length) {
+                                    hidePelanggan(i, j);
+                                }
+                                break;
+                            } 
+                            // else {
+                            //     console.log("anjay kamu bohong");
+                            //     makananDrag.setScale(0).destroy();
+                            // }
+                            console.log("for arrDataPelanggan[i].dataMakanan.length");
                         }
-                    } else {
-                        console.log('Tidak bertumpuk.');
-                        makananDrag.setScale(0).destroy();
-                    }
+                        break;
+                    } 
+                    // else {
+                    //     console.log('Tidak bertumpuk.');
+                    //     makananDrag.setScale(0).destroy();
+                    // }
+                }
+
+                if (!kenaPelanggan) {
+                    console.log("anjay kamu bohong");
+                    console.log('Tidak bertumpuk.');
+                    makananDrag.setScale(0).destroy();
                 }
             }
         }, this);
@@ -350,14 +473,14 @@ class ScenePlay extends Phaser.Scene
 
     }
 
-    rgbToHex(r, g, b) {
-        return (
-            '#' +
-            r.toString(16).padStart(2, '0') +
-            g.toString(16).padStart(2, '0') +
-            b.toString(16).padStart(2, '0')
-        );
-    }
+    // rgbToHex(r, g, b) {
+    //     return (
+    //         '#' +
+    //         r.toString(16).padStart(2, '0') +
+    //         g.toString(16).padStart(2, '0') +
+    //         b.toString(16).padStart(2, '0')
+    //     );
+    // }
 
     returnBuble(x, y, width, height)
     {        
@@ -406,7 +529,7 @@ class ScenePlay extends Phaser.Scene
     returnText(quote, bubble, bubblePadding, bubbleWidth, bubbleHeight )
     {        
         const content = this.add.text(0, 0, quote, { fontFamily: 'Arial Black', fontSize: 24, color: '#ffffff', align: 'center', wordWrap: { width: bubbleWidth - (bubblePadding * 2) } });
-        content.setStroke(this.rgbToHex(41, 83, 51), 16).setShadow(2, 2, '#333333', 2, true, true);
+        content.setStroke(rgbToHexColor(41, 83, 51), 16).setShadow(2, 2, '#333333', 2, true, true);
 
         const b = content.getBounds();
 
@@ -462,7 +585,7 @@ class ScenePlay extends Phaser.Scene
 
         const content = this.returnText(quote, bubble, bubblePadding, bubbleWidth, bubbleHeight);
         // const content = this.add.text(0, 0, quote, { fontFamily: 'Arial Black', fontSize: 24, color: '#ffffff', align: 'center', wordWrap: { width: bubbleWidth - (bubblePadding * 2) } });
-        // content.setStroke(this.rgbToHex(41, 83, 51), 16).setShadow(2, 2, '#333333', 2, true, true);
+        // content.setStroke(rgbToHexColor(41, 83, 51), 16).setShadow(2, 2, '#333333', 2, true, true);
 
         // const b = content.getBounds();
 
@@ -501,36 +624,46 @@ class ScenePlay extends Phaser.Scene
 
     createMakananPelangggan(x, y)
     {
-        let jmlMakanan = 1;
-        // let jmlMakanan = Phaser.Math.Between(1, 3);
+        // let jmlMakanan = 3;
+        let jmlMakanan = Phaser.Math.Between(1, 3);
         let arrIdMakanan = [];
-        let arrSprMakanan = [];
+        // let arrSprMakanan = [];
         for (let i = 0; i < jmlMakanan; i++) {
             let randomId = Phaser.Math.Between(1, 10);
 
-            if (!arrIdMakanan.includes(randomId)) {
-                arrIdMakanan.push(randomId);
+            // if (!arrIdMakanan.includes(randomId)) {
+            if (!arrIdMakanan.some(obj => obj.id === randomId)) {
+                arrIdMakanan.push({id: randomId, spr: null});
+                // arrIdMakanan.push(randomId);
             }
         }
         console.log('List ID:', arrIdMakanan);
         
-        const widthBubble = 200;
-        const heightBubble = 100;
-        if (jmlMakanan == 2) {
+        let widthBubble = 200;
+        let heightBubble = 100;
+        let margin = 0;
+        let reposX = 0;
+        if (arrIdMakanan.length == 2) {
             widthBubble = 250;
-        } else if (jmlMakanan == 3) {
+            margin = 20;
+            reposX = 40;
+        } else if (arrIdMakanan.length == 3) {
             widthBubble = 300;
+            margin = 10;
+            reposX = 80;
         }
         let bubblePelanggan = this.returnBuble(x, y, widthBubble, heightBubble);
         bubblePelanggan.setScale(-1, 1);
         arrDataPelanggan[arrDataPelanggan.length - 1].bubble = bubblePelanggan;
         for (let i = 0; i < arrIdMakanan.length; i++) {
-            let mknBubble = this.add.image(bubblePelanggan.x - widthBubble / 2, bubblePelanggan.y + heightBubble / 2, "Makanan" + arrIdMakanan[0]);
+            let mknBubble = this.add.image(bubblePelanggan.x - widthBubble / 2 - reposX + (widthBubble / 4 + margin) * i, bubblePelanggan.y + heightBubble / 2, "Makanan" + arrIdMakanan[i].id);
             mknBubble.setScale(0.2);
-            arrSprMakanan.push(mknBubble);
+            arrIdMakanan[i].spr = mknBubble;
+            // arrSprMakanan.push(mknBubble);
         }
+        console.log("arrIdMakanan", arrIdMakanan);
         
-        arrDataPelanggan[arrDataPelanggan.length - 1].dataSprMakanan = arrSprMakanan;
+        // arrDataPelanggan[arrDataPelanggan.length - 1].dataSprMakanan = arrSprMakanan;
         arrDataPelanggan[arrDataPelanggan.length - 1].dataMakanan = arrIdMakanan;
         console.log(arrDataPelanggan);
     }
@@ -548,7 +681,7 @@ const config = {
         height: 1280, // Tinggi dasar yang cukup untuk potret
     },
     backgroundColor: '#ffffff',
-    scene: [SceneMenu, ScenePlay],
+    scene: [PreloadScene, SceneMenu, ScenePlay],
     // scene: [ScenePlay],
     physics: {
         default: 'arcade',
