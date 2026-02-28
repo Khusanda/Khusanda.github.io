@@ -8,6 +8,7 @@ var bubbleTeks;
 var Teks;
 var arrMakanan = [];
 var arrDataPelanggan = [];
+var tbKeyChoose = [];
 
 var canDrag = false;
 var getKey = false;
@@ -195,7 +196,13 @@ class ScenePlay extends Phaser.Scene
         this.load.image("Kucing", "assets/gfx/Kucing.png");
         this.load.image("PintuTutup", "assets/gfx/PintuTutup.png");
         this.load.image("PintuBuka", "assets/gfx/PintuBuka.png");
+        this.load.image("PintuBuka1", "assets/gfx/PintuBuka1.png");
+        this.load.image("PintuBuka2", "assets/gfx/PintuBuka2.png");
         this.load.image("Key", "assets/gfx/Key.png");
+        this.load.image("Key1", "assets/gfx/Key1.png");
+        this.load.image("Key2", "assets/gfx/Key2.png");
+        this.load.image("Key3", "assets/gfx/Key3.png");
+        this.load.image("Key4", "assets/gfx/Key4.png");
         // this.load.image("Etalase", "assets/gfx/Etalase.png");
         // this.load.image("PakWarung", "assets/gfx/PakWarteg.png");
         // for (let i = 1; i < 13; i++) {
@@ -220,11 +227,15 @@ class ScenePlay extends Phaser.Scene
 
         let layer = this.add.layer();
         let splat = this.make.image({ x: winSizeX / 2, y: winSizeY / 2, key: 'Flat' }, false);
-        splat.scale = 0.8;
+        splat.scale = 0.6;
+        splat.setInteractive();
         // let splatBlur = splat.preFX.addBlur();
         // splatBlur.strength = 0; // 0 - 1
         let mask = splat.createBitmapMask();
         layer.setMask(mask);
+        let rectSplat = layer.add(this.add.rectangle(splat.x, splat.y, splat.getBounds().width / 2 - 40, splat.getBounds().height / 2 - 40, rgbToHexColor(255, 0, 0)));
+        rectSplat.alpha = 0;
+        // rectSplat.depth = 1;
 
         // // Membuat persegi panjang hitam seukuran layar
         // // argumen: x, y, lebar, tinggi, warna, alpha (transparansi)
@@ -250,17 +261,53 @@ class ScenePlay extends Phaser.Scene
 
         let Key = layer.add(this.add.image(winSizeX / 2, winSizeY / 2, "Key"));
         Key.setInteractive();
+        for (let i = 1; i < 5; i++) {
+            let KeyChoose = layer.add(this.add.image(winSizeX / 2, winSizeY / 2, "Key" + i));
+            KeyChoose.x = Phaser.Math.Between(KeyChoose.width / 2, winSizeX - KeyChoose.width / 2);
+            KeyChoose.y = Phaser.Math.Between(KeyChoose.height / 2, winSizeY - KeyChoose.width / 2);
+            tbKeyChoose.push(KeyChoose);
+        }
         
         let PintuTutup = layer.add(this.add.image(winSizeX, winSizeY, "PintuTutup"));
-        let PintuBuka = layer.add(this.add.image(winSizeX, winSizeY, "PintuBuka"));
+        // let PintuBuka = layer.add(this.add.image(winSizeX, winSizeY, "PintuBuka"));
+        let PintuBuka1 = layer.add(this.add.image(winSizeX, winSizeY, "PintuBuka1"));
+        let PintuBuka2 = layer.add(this.add.image(winSizeX, winSizeY, "PintuBuka2"));
         PintuTutup.setInteractive();
-        PintuBuka.setVisible(false);
-        PintuTutup.x = winSizeX - PintuTutup.width / 2;
-        PintuTutup.y = winSizeY - PintuTutup.height / 2;
-        PintuBuka.x = winSizeX - PintuBuka.width / 2;
-        PintuBuka.y = winSizeY - PintuBuka.height / 2;
-        Key.x = Phaser.Math.Between(Key.width / 2, PintuTutup.x - (PintuTutup.width / 2 + Key.width / 2));
-        Key.y = Phaser.Math.Between(Key.height / 2, PintuTutup.y - (PintuTutup.width / 2 + Key.width / 2));
+        // PintuBuka.setVisible(false);
+        PintuBuka1.setVisible(false);
+        PintuBuka2.setVisible(false);
+        const tbPosPintu = [
+            { x: PintuTutup.width / 2 - 5, y: PintuTutup.height / 2 },
+            { x: PintuTutup.width / 2 - 5, y: winSizeY - PintuTutup.height / 2 },
+            { x: winSizeX - PintuTutup.width / 2 + 5, y: PintuTutup.height / 2 },
+            { x: winSizeX - PintuTutup.width / 2 + 5, y: winSizeY - PintuTutup.height / 2 },
+        ];
+        const rndIdPos = Phaser.Math.Between(0, (tbPosPintu.length - 1));
+        PintuTutup.x = tbPosPintu[rndIdPos].x;
+        PintuTutup.y = tbPosPintu[rndIdPos].y;
+        // PintuBuka.x = PintuTutup.x;
+        // PintuBuka.y = PintuTutup.y;
+        PintuBuka1.x = PintuTutup.x;
+        PintuBuka1.y = PintuTutup.y;
+        PintuBuka2.x = PintuTutup.x;
+        PintuBuka2.y = PintuTutup.y;
+        Key.x = Phaser.Math.Between(Key.width / 2, winSizeX - Key.width / 2);
+        Key.y = Phaser.Math.Between(Key.height / 2, winSizeY - Key.width / 2);
+        tbKeyChoose.push(Key);
+        var rndKey = (0, (tbKeyChoose.length - 1));
+        for (let i = 0; i < tbKeyChoose.length; i++) {
+            tbKeyChoose[i].tag = i;
+            if (Phaser.Geom.Intersects.RectangleToRectangle(PintuTutup.getBounds(), tbKeyChoose[i].getBounds())) {
+                console.log("waw");
+                while ((Phaser.Geom.Intersects.RectangleToRectangle(PintuTutup.getBounds(), tbKeyChoose[i].getBounds()))) {
+                    tbKeyChoose[i].x = Phaser.Math.Between(tbKeyChoose[i].width / 2, winSizeX - tbKeyChoose[i].width / 2);
+                    tbKeyChoose[i].y = Phaser.Math.Between(tbKeyChoose[i].height / 2, winSizeY - tbKeyChoose[i].width / 2);
+                    console.log("while");
+                }
+            }
+        }
+        PintuBuka1.depth = (PintuBuka1.x > winSizeX / 2) ? 0 : 1;
+        PintuBuka2.depth = (PintuBuka1.x > winSizeX / 2) ? 1 : 0;
 
         // const fx = BgWhite.preFX.addVignette();
         // fx.radius = 0.2;
@@ -274,11 +321,56 @@ class ScenePlay extends Phaser.Scene
         Kucing.setOrigin(0.5);
         Kucing.scale = 0.23;
         Kucing.setInteractive();
+        Kucing.setFlipX((PintuBuka1.x < winSizeX / 2));
+        Kucing.x = (PintuBuka1.x > winSizeX / 2) ? PintuBuka1.x - 50 : PintuBuka1.x + 50;
+        Kucing.y = PintuBuka1.y + PintuBuka1.height / 2 - Kucing.getBounds().height / 2 - 10;
+        Kucing.alpha = 0;
 
-        Kucing.on('pointerdown', function (pointer)
+        // Kucing.on('pointerdown', function (pointer)
+        this.input.on('pointerdown', (pointer) =>
+        {
+            if (!getKey) {
+                for (let i = 0; i < tbKeyChoose.length; i++) {
+                    if (Phaser.Geom.Intersects.RectangleToRectangle(rectSplat.getBounds(), tbKeyChoose[i].getBounds()) && rndIdPos == i) {
+                        console.log("Scene | ScenePlay | Key.on | pointerdown | Kena KEY");
+                        getKey = true;
+                        tbKeyChoose[i].alpha = 0;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                if (Phaser.Geom.Intersects.RectangleToRectangle(rectSplat.getBounds(), PintuTutup.getBounds()) && !done) {
+                    console.log("Scene | ScenePlay | Move | pointermove | Kena PINTU TUTUP");
+                    done = true;
+
+                    for (let i = 0; i < tbKeyChoose.length; i++) {
+                        tbKeyChoose[i].alpha = 0;
+                    }
+
+                    PintuTutup.alpha = 0;
+                    PintuBuka1.setVisible(true);
+                    PintuBuka2.setVisible(true);
+
+                    Kucing.alpha = 1;
+                    this.tweens.add({
+                        targets: Kucing,
+                        x: Kucing.flipX ? (-Kucing.getBounds().width / 2) : (winSizeX + Kucing.getBounds().width / 2),
+                        duration: 1000,
+                    });
+                    
+                    splat.x = Kucing.x;
+                    splat.y = Kucing.y;
+
+                    layer.clearMask();
+                }
+            }
+        });
+        splat.on('pointerdown', function (pointer)
         {
             // Klik kucing
-            // console.log("Scene | ScenePlay | Klik | pointerdown");
+            console.log("Scene | ScenePlay | Klik | pointerdown");
             if (done) {
                 return;
             }
@@ -296,31 +388,29 @@ class ScenePlay extends Phaser.Scene
                 // console.log("Scene | ScenePlay | Move | pointermove");
                 splat.x = pointer.x;
                 splat.y = pointer.y;
-                Kucing.x = pointer.x;
-                Kucing.y = pointer.y;
-                if (!getKey) {
-                    if (Phaser.Geom.Intersects.RectangleToRectangle(Kucing.getBounds(), Key.getBounds())) {
-                        console.log("Scene | ScenePlay | Move | pointermove | Kena KEY");
-                        getKey = true;
-                        Key.alpha = 0;
-                    }
-                }
-                else {
-                    if (Phaser.Geom.Intersects.RectangleToRectangle(Kucing.getBounds(), PintuTutup.getBounds()) && !done) {
-                        console.log("Scene | ScenePlay | Move | pointermove | Kena PINTU TUTUP");
-                        done = true;
+                rectSplat.x = splat.x;
+                rectSplat.y = splat.y;
+                // if (!getKey) {
+                //     if (Phaser.Geom.Intersects.RectangleToRectangle(Kucing.getBounds(), Key.getBounds())) {
+                //         console.log("Scene | ScenePlay | Move | pointermove | Kena KEY");
+                //         getKey = true;
+                //         Key.alpha = 0;
+                //     }
+                // }
+                // else {
+                //     if (Phaser.Geom.Intersects.RectangleToRectangle(Kucing.getBounds(), PintuTutup.getBounds()) && !done) {
+                //         console.log("Scene | ScenePlay | Move | pointermove | Kena PINTU TUTUP");
+                //         done = true;
 
-                        PintuTutup.alpha = 0;
-                        PintuBuka.setVisible(true);
+                //         PintuTutup.alpha = 0;
+                //         PintuBuka.setVisible(true);
                         
-                        Kucing.x = PintuBuka.x - 40;
-                        Kucing.y = PintuBuka.y + PintuBuka.height / 2 - Kucing.getBounds().height / 2;
-                        splat.x = Kucing.x;
-                        splat.y = Kucing.y;
+                //         splat.x = Kucing.x;
+                //         splat.y = Kucing.y;
 
-                        layer.clearMask();
-                    }
-                }
+                //         layer.clearMask();
+                //     }
+                // }
             }
         })
         this.input.on('pointerup', function ()
