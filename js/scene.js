@@ -8,8 +8,11 @@ var bubbleTeks;
 var Teks;
 var arrMakanan = [];
 var arrDataPelanggan = [];
+
+var tbPathKey = [];
 var tbKeyChoose = [];
 
+var freeze = true;
 var canDrag = false;
 var getKey = false;
 var done = false;
@@ -203,6 +206,11 @@ class ScenePlay extends Phaser.Scene
         this.load.image("Key2", "assets/gfx/Key2.png");
         this.load.image("Key3", "assets/gfx/Key3.png");
         this.load.image("Key4", "assets/gfx/Key4.png");
+        tbPathKey.push("Key");
+        tbPathKey.push("Key1");
+        tbPathKey.push("Key2");
+        tbPathKey.push("Key3");
+        tbPathKey.push("Key4");
         // this.load.image("Etalase", "assets/gfx/Etalase.png");
         // this.load.image("PakWarung", "assets/gfx/PakWarteg.png");
         // for (let i = 1; i < 13; i++) {
@@ -227,19 +235,77 @@ class ScenePlay extends Phaser.Scene
 
         let layer = this.add.layer();
         let splat = this.make.image({ x: winSizeX / 2, y: winSizeY / 2, key: 'Flat' }, false);
-        splat.scale = 0.6;
+        splat.scale = 5;//0.6;
         splat.setInteractive();
         // let splatBlur = splat.preFX.addBlur();
         // splatBlur.strength = 0; // 0 - 1
         let mask = splat.createBitmapMask();
         layer.setMask(mask);
-        let rectSplat = layer.add(this.add.rectangle(splat.x, splat.y, splat.getBounds().width / 2 - 40, splat.getBounds().height / 2 - 40, rgbToHexColor(255, 0, 0)));
+        let rectSplat = layer.add(this.add.rectangle(splat.x, splat.y, (splat.width * 0.6) / 2 - 40, (splat.height * 0.6) / 2 - 40, rgbToHexColor(255, 0, 0)));
         rectSplat.alpha = 0;
         // rectSplat.depth = 1;
 
-        // // Membuat persegi panjang hitam seukuran layar
-        // // argumen: x, y, lebar, tinggi, warna, alpha (transparansi)
-        // this.bgBlack = this.add.rectangle(0, 0, winSizeX, winSizeY, 0x000000);
+        // Membuat persegi panjang hitam seukuran layar
+        // argumen: x, y, lebar, tinggi, warna, alpha (transparansi)
+        let bgBlack = this.add.rectangle(winSizeX / 2, winSizeY / 2, winSizeX, winSizeY, 0x000000);
+        let lblQuest = this.add.text(winSizeX / 2, winSizeY / 2, 'find the key and the way out', { fontFamily: 'roadside', fontSize: '48px', fill: '#00ff00', align: 'center' }).setOrigin(0.5);
+        var rndKey = Phaser.Math.Between(0, (tbPathKey.length - 1));
+        // --- MENGGUNAKAN PHASER GRAPHICS ---
+        // 1. Buat objek Graphics
+        let graphics = this.add.graphics();
+        // 2. Tentukan gaya isi (fillStyle)
+        // argumen: warna (hex), opasitas (0-1)
+        graphics.fillStyle(0xff0000, 1); // Warna merah penuh
+        // 3. Tentukan gaya garis tepi (lineStyle) - Opsional
+        // argumen: ketebalan, warna, opasitas
+        graphics.lineStyle(4, 0xffffff, 1); // Garis tepi putih 4px
+        // 4. Gambar lingkaran
+        // argumen: x, y, radius (jari-jari)
+        // x dan y di sini adalah titik PUSAT lingkaran
+        graphics.fillCircle(winSizeX / 2, winSizeY / 2, 100); // Isi merah
+        graphics.strokeCircle(winSizeX / 2, winSizeY / 2, 100); // Garis tepi putih
+        let KeyClue = this.add.image(winSizeX / 2, winSizeY / 2, tbPathKey[rndKey]);
+        graphics.alpha = 0;
+        KeyClue.alpha = 0;
+        console.log(rndKey);
+        this.time.delayedCall(1500, () => {
+            this.tweens.add({
+                targets: lblQuest,
+                alpha: 0,
+                duration: 350,
+                onComplete: () => {
+                    this.tweens.add({
+                        targets: [graphics, KeyClue],
+                        alpha: 1,
+                        duration: 350,
+                        onComplete: () => {
+                            this.time.delayedCall(1000, () => {
+                                this.tweens.add({
+                                    targets: [graphics, KeyClue],
+                                    alpha: 0,
+                                    duration: 350,
+                                    onComplete: () => {
+                                        this.tweens.add({
+                                            targets: bgBlack,
+                                            alpha: 0,
+                                            duration: 500,
+                                        });
+                                        this.tweens.add({
+                                            targets: splat,
+                                            scale: 0.6,
+                                            duration: 150,
+                                            onComplete: () => {
+                                                freeze = false;
+                                            }
+                                        });
+                                    }
+                                });
+                            });
+                        }
+                    });
+                }
+            });
+        });
         
         // // Set origin ke 0,0 agar koordinat dimulai dari pojok kiri atas
         // this.bgBlack.setOrigin(0, 0);
@@ -261,6 +327,7 @@ class ScenePlay extends Phaser.Scene
 
         let Key = layer.add(this.add.image(winSizeX / 2, winSizeY / 2, "Key"));
         Key.setInteractive();
+        tbKeyChoose.push(Key);
         for (let i = 1; i < 5; i++) {
             let KeyChoose = layer.add(this.add.image(winSizeX / 2, winSizeY / 2, "Key" + i));
             KeyChoose.x = Phaser.Math.Between(KeyChoose.width / 2, winSizeX - KeyChoose.width / 2);
@@ -293,8 +360,6 @@ class ScenePlay extends Phaser.Scene
         PintuBuka2.y = PintuTutup.y;
         Key.x = Phaser.Math.Between(Key.width / 2, winSizeX - Key.width / 2);
         Key.y = Phaser.Math.Between(Key.height / 2, winSizeY - Key.width / 2);
-        tbKeyChoose.push(Key);
-        var rndKey = (0, (tbKeyChoose.length - 1));
         for (let i = 0; i < tbKeyChoose.length; i++) {
             tbKeyChoose[i].tag = i;
             if (Phaser.Geom.Intersects.RectangleToRectangle(PintuTutup.getBounds(), tbKeyChoose[i].getBounds())) {
@@ -326,12 +391,13 @@ class ScenePlay extends Phaser.Scene
         Kucing.y = PintuBuka1.y + PintuBuka1.height / 2 - Kucing.getBounds().height / 2 - 10;
         Kucing.alpha = 0;
 
-        // Kucing.on('pointerdown', function (pointer)
         this.input.on('pointerdown', (pointer) =>
         {
+            if (freeze) return;
+
             if (!getKey) {
                 for (let i = 0; i < tbKeyChoose.length; i++) {
-                    if (Phaser.Geom.Intersects.RectangleToRectangle(rectSplat.getBounds(), tbKeyChoose[i].getBounds()) && rndIdPos == i) {
+                    if (Phaser.Geom.Intersects.RectangleToRectangle(rectSplat.getBounds(), tbKeyChoose[i].getBounds()) && rndKey == i) {
                         console.log("Scene | ScenePlay | Key.on | pointerdown | Kena KEY");
                         getKey = true;
                         tbKeyChoose[i].alpha = 0;
@@ -339,8 +405,9 @@ class ScenePlay extends Phaser.Scene
                     }
                 }
             }
-            else
+            else if (getKey)
             {
+                console.log(getKey);
                 if (Phaser.Geom.Intersects.RectangleToRectangle(rectSplat.getBounds(), PintuTutup.getBounds()) && !done) {
                     console.log("Scene | ScenePlay | Move | pointermove | Kena PINTU TUTUP");
                     done = true;
@@ -369,6 +436,8 @@ class ScenePlay extends Phaser.Scene
         });
         splat.on('pointerdown', function (pointer)
         {
+            if (freeze) return;
+
             // Klik kucing
             console.log("Scene | ScenePlay | Klik | pointerdown");
             if (done) {
@@ -379,6 +448,8 @@ class ScenePlay extends Phaser.Scene
         });
         this.input.on('pointermove', function (pointer)
         {
+            if (freeze) return;
+
             // Move
             if (done) {
                 return;
@@ -390,31 +461,12 @@ class ScenePlay extends Phaser.Scene
                 splat.y = pointer.y;
                 rectSplat.x = splat.x;
                 rectSplat.y = splat.y;
-                // if (!getKey) {
-                //     if (Phaser.Geom.Intersects.RectangleToRectangle(Kucing.getBounds(), Key.getBounds())) {
-                //         console.log("Scene | ScenePlay | Move | pointermove | Kena KEY");
-                //         getKey = true;
-                //         Key.alpha = 0;
-                //     }
-                // }
-                // else {
-                //     if (Phaser.Geom.Intersects.RectangleToRectangle(Kucing.getBounds(), PintuTutup.getBounds()) && !done) {
-                //         console.log("Scene | ScenePlay | Move | pointermove | Kena PINTU TUTUP");
-                //         done = true;
-
-                //         PintuTutup.alpha = 0;
-                //         PintuBuka.setVisible(true);
-                        
-                //         splat.x = Kucing.x;
-                //         splat.y = Kucing.y;
-
-                //         layer.clearMask();
-                //     }
-                // }
             }
         })
         this.input.on('pointerup', function ()
         {
+            if (freeze) return;
+
             // Ended or Realese Klik
             if (canDrag) {
                 // console.log("Scene | ScenePlay | Ended | pointerup");
