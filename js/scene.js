@@ -248,7 +248,7 @@ class ScenePlay extends Phaser.Scene
         // Membuat persegi panjang hitam seukuran layar
         // argumen: x, y, lebar, tinggi, warna, alpha (transparansi)
         let bgBlack = this.add.rectangle(winSizeX / 2, winSizeY / 2, winSizeX, winSizeY, 0x000000);
-        let lblQuest = this.add.text(winSizeX / 2, winSizeY / 2, 'find the key and the way out', { fontFamily: 'roadside', fontSize: '48px', fill: '#00ff00', align: 'center' }).setOrigin(0.5);
+        let lblQuest = this.add.text(winSizeX / 2, winSizeY / 2, 'find the key\nand\nthe way out', { fontFamily: 'roadside', fontSize: '48px', fill: '#00ff00', align: 'center' }).setOrigin(0.5);
         var rndKey = Phaser.Math.Between(0, (tbPathKey.length - 1));
         // --- MENGGUNAKAN PHASER GRAPHICS ---
         // 1. Buat objek Graphics
